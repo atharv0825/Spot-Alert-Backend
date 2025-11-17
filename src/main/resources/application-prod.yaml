@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: SpotAlert
+
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+      database: spot_alert_Spots
+
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: always

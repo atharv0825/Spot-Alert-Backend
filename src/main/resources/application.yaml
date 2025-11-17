@@ -1,3 +1,9 @@
 spring:
   application:
     name: SpotAlert
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/spot_alert_Spots
+#      uri: ${MONGO_URI}
+      database: spot_alert_Spots

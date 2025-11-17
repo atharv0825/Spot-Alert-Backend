@@ -4,6 +4,18 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/spot_alert_Spots
-#      uri: ${MONGO_URI}
+#      uri: mongodb://localhost:27017/spot_alert_Spots
+      uri: ${MONGO_URI}
       database: spot_alert_Spots
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  server:
+    port: ${PORT:8080}

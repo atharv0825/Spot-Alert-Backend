@@ -1,4 +1,4 @@
-package com.spotAlert.backend.Utility;
+package com.spotAlert.backend.Utilities;
 
 public class DistanceUtil {
 

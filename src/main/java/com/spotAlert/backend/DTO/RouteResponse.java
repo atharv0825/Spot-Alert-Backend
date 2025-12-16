@@ -14,5 +14,5 @@ public class RouteResponse {
     private double durationSeconds;
     private String polyline;
     private int totalHazardsCount;
-    private List<HazardRouteMatch> hazards;
+    private List<HazardRouteMatch> allHazardsOnRoute;
 }

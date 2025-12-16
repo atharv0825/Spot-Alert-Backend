@@ -1,8 +1,11 @@
 package com.spotAlert.backend.Utilities.OSRM;
 
 import com.spotAlert.backend.DTO.HazardRouteMatch;
+import com.spotAlert.backend.DTO.HazardsDTO;
+import com.spotAlert.backend.DTO.HazardsResponseDTO;
 import com.spotAlert.backend.DTO.RoutePoint;
 import com.spotAlert.backend.Entity.Hazard;
+import com.spotAlert.backend.Mapper.HazardsMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -33,12 +36,13 @@ public class HazardousOnRoute {
                 closestIndex = i;
             }
         }
+        HazardsResponseDTO hazardsDTO = HazardsMapper.toResponseDTO(hazard);
 
         if (minDistance <= thresholdMeters) {
-            return new HazardRouteMatch(true, closestIndex, minDistance);
+            return new HazardRouteMatch(true, closestIndex, minDistance , hazardsDTO);
         }
 
-        return new HazardRouteMatch(false, -1, minDistance);
+        return new HazardRouteMatch(false, -1, minDistance , hazardsDTO);
     }
 
     public static int findUserRouteIndex(

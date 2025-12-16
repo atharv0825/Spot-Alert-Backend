@@ -1,6 +1,7 @@
 package com.spotAlert.backend.Mapper;
 
 import com.spotAlert.backend.DTO.HazardsDTO;
+import com.spotAlert.backend.DTO.HazardsResponseDTO;
 import com.spotAlert.backend.Entity.Hazard;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
@@ -39,6 +40,18 @@ public class HazardsMapper {
                 .roadName(h.getRoadName())
                 .location(h.getLocation())
                 .city(h.getCity())
+                .build();
+    }
+
+    public static HazardsResponseDTO toResponseDTO(Hazard h) {
+        return HazardsResponseDTO.builder()
+                .id(h.getId())
+                .type(h.getType())
+                .latitude(h.getLatitude())
+                .longitude(h.getLongitude())
+                .title(h.getTitle())
+                .description(h.getDescription())
+                .severity(h.getSeverity())
                 .build();
     }
 }

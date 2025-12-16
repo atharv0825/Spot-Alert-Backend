@@ -22,18 +22,12 @@ public class RouteService {
 
     public RouteResponse getBasicRoute(RouteRequest request) {
 
-        double startLat = request.getSourceLat();
-        double startLng = request.getSourceLng();
-
-
-
         RouteResponse response = osrmRoutingService.getRoute(
-                startLat,
-                startLng,
+                request.getSourceLat(),
+                request.getSourceLng(),
                 request.getDestLat(),
                 request.getDestLng()
         );
-
         List<RoutePoint>optimizedPoints = getOptimizedRoutePoints(response); // downsampled Point
 
         int userIndex = HazardousOnRoute.findUserRouteIndex(request.getSourceLat(),request.getSourceLng(),optimizedPoints);
@@ -48,7 +42,7 @@ public class RouteService {
 
         //by using users current location track the upcoming points ignore passed points
         List<HazardRouteMatch>upcomingHazardsOnRoad = getUpcomingHazardsOnRoad(hazardsOnRoad , userIndex);
-        response.setHazards(upcomingHazardsOnRoad);
+        response.setAllHazardsOnRoute(upcomingHazardsOnRoad);
         response.setTotalHazardsCount(upcomingHazardsOnRoad.size());
         return response;
     }
@@ -60,7 +54,7 @@ public class RouteService {
         List<RoutePoint>optimizedPoints = DownsampleRoute.downsample(allRoutePoints,15);
         log.info("Downsampled points: {}", optimizedPoints.size());
 
-        return optimizedPoints;
+        return allRoutePoints;
     }
 
     private RouteBoundingBox getExpandedBoundingBox(List<RoutePoint>optimizedPoints){
@@ -90,6 +84,6 @@ public class RouteService {
                 .filter(h -> h.getRouteIndex() > userIndex)
                 .toList();
     }
-
+    
 
 }

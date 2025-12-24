@@ -9,19 +9,20 @@ import java.time.LocalDateTime;
 
 public class HazardsMapper {
 
-    public static Hazard toEntity(HazardsDTO dto, String source) {
+    public static Hazard toEntity(HazardsDTO dto) {
 
         return Hazard.builder()
-                .Id(dto.getId())
+                .id(dto.getId())
                 .type(dto.getType())
                 .latitude(dto.getLatitude())
                 .longitude(dto.getLongitude())
                 .title(dto.getTitle())
+                .source(dto.getSource())
                 .description(dto.getDescription())
                 .severity(dto.getSeverity())
-                .source(source)
                 .roadName(dto.getRoadName())
                 .city(dto.getCity())
+                .verified(dto.getVerified())
                 .spotAddedAt(LocalDateTime.now())
                 .location((new GeoJsonPoint(dto.getLongitude(), dto.getLatitude())))
                 .build();
@@ -37,6 +38,7 @@ public class HazardsMapper {
                 .description(h.getDescription())
                 .severity(h.getSeverity())
                 .source(h.getSource())
+                .verified(h.getVerified())
                 .roadName(h.getRoadName())
                 .location(h.getLocation())
                 .city(h.getCity())

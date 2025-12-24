@@ -6,6 +6,7 @@ import com.spotAlert.backend.DTO.RouteResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,13 +24,17 @@ public class OsrmRoutingService {
     @Value("${osrm.profile}")
     private String profile;
 
+    @Cacheable(
+            value = "osrm-routes",
+            key = "'route:' + #sourceLat + ',' + #sourceLng + ':' + #destLat + ',' + #destLng"
+    )
     public RouteResponse getRoute(
             double sourceLat,
             double sourceLng,
             double destLat,
             double destLng
     ) {
-
+        log.info("Redis cache miss");
         String url = String.format(
                 "%s/route/v1/%s/%f,%f;%f,%f?overview=full&geometries=polyline&steps=false",
                 osrmBaseUrl,

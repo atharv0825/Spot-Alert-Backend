@@ -1,6 +1,7 @@
 package com.spotAlert.backend.Service;
 
 import com.spotAlert.backend.DTO.HazardsDTO;
+import com.spotAlert.backend.DTO.HazardsResponseDTO;
 import com.spotAlert.backend.Entity.Hazard;
 import com.spotAlert.backend.Mapper.HazardsMapper;
 import com.spotAlert.backend.Repository.HazardRepository;
@@ -22,53 +23,78 @@ public class HazardService {
 
     private final HazardRepository hazardRepository;
 
-
-    public List<Hazard> getAll() {
-        return hazardRepository.findAll();
-    }
-
-    public HazardsDTO addHazards(HazardsDTO hazardsDTO , String source){
-        try{
-            Hazard hazard = HazardsMapper.toEntity(hazardsDTO, source);
-            if(source.equalsIgnoreCase("USER-REPORT")){
-                hazardsDTO.setSource("USER-REPORT");
-            }
-            else{
-                hazardsDTO.setSource("ADMIN");
-            }
-            Hazard saved = hazardRepository.save(hazard);
-            return HazardsMapper.toDTO(saved);
+    public HazardsDTO addHazards(HazardsDTO hazardsDTO) {
+        try {
+            Hazard hazard = HazardsMapper.toEntity(hazardsDTO);
+            return HazardsMapper.toDTO(hazardRepository.save(hazard));
         } catch (Exception e) {
             throw new RuntimeException("Failed to add hazard", e);
         }
     }
 
-    public List<Hazard> findNearby(double latitude, double longitude, double radiusMeters) {
+    public List<HazardsResponseDTO> getHazardsByCity(String city) {
+        if (city == null || city.isBlank()) return List.of();
 
-        try {
-            Point userPoint = new Point(longitude, latitude);
-            Distance radius = new Distance(radiusMeters / 1000.0, Metrics.KILOMETERS);
+        return hazardRepository.findByCityContainingIgnoreCase(city)
+                .stream()
+                .map(HazardsMapper::toResponseDTO)
+                .toList();
+    }
 
-            log.info("MongoDB Query → findByLocationNear(point={}, radius(KM)={})",
-                    userPoint, radius.getValue());
+    public List<HazardsResponseDTO> getUnverifiedHazardsByCity(String city) {
+        if (city == null || city.isBlank()) return List.of();
 
-            List<Hazard> result = hazardRepository.findByLocationNear(userPoint, radius);
+        return hazardRepository.findByCityContainingIgnoreCaseAndVerifiedFalse(city)
+                .stream()
+                .map(HazardsMapper::toResponseDTO)
+                .toList();
+    }
 
-            log.info("MongoDB returned {} hazards within {} meters.", result.size(), radiusMeters);
+    public void verifyHazards(String id) {
+        Hazard hazard = hazardRepository.findByIdAndVerifiedFalse(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Hazard not found or already verified: " + id));
 
-            return result;
+        hazard.setVerified(true);
+        hazardRepository.save(hazard);
+    }
 
-        } catch (Exception e) {
-            log.error("Error occurred during geospatial query:", e);
-
-            if (e.getMessage().contains("NoQueryExecutionPlans")) {
-                log.error("MongoDB cannot execute geospatial query — likely missing or invalid 2dsphere index.");
-            }
-            if (e.getMessage().contains("geoNear")) {
-                log.error("GeoNear error — check if all documents have valid GeoJSON {type:'Point'} structure.");
-            }
-
-            throw new RuntimeException("Failed to retrieve nearby hazards", e);
+    public void verifyMultipleHazards(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("Hazard ID list cannot be empty");
         }
+
+        List<Hazard> hazards = hazardRepository.findByIdIn(ids);
+
+        hazards.forEach(h -> {
+            if (Boolean.FALSE.equals(h.getVerified())) {
+                h.setVerified(true);
+            }
+        });
+
+        hazardRepository.saveAll(hazards);
+    }
+
+    public void deleteHazard(String id) {
+        Hazard hazard = hazardRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Hazard not found with id: " + id));
+
+        hazardRepository.delete(hazard);
+    }
+
+    public void deleteHazardsBulk(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("Hazard ID list cannot be empty");
+        }
+
+        List<Hazard> hazards = hazardRepository.findByIdIn(ids);
+
+        if (hazards.isEmpty()) {
+            throw new IllegalArgumentException("No hazards found for provided IDs");
+        }
+
+        hazardRepository.deleteAll(hazards);
     }
 }

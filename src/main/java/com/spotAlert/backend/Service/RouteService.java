@@ -54,7 +54,7 @@ public class RouteService {
         List<RoutePoint>optimizedPoints = DownsampleRoute.downsample(allRoutePoints,15);
         log.info("Downsampled points: {}", optimizedPoints.size());
 
-        return allRoutePoints;
+        return optimizedPoints;
     }
 
     private RouteBoundingBox getExpandedBoundingBox(List<RoutePoint>optimizedPoints){

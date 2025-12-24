@@ -20,6 +20,7 @@ public class HazardsDTO {
     private String description;
     private int severity;
     private String source;
+    private Boolean verified;
     private String roadName;
     private String city;
     private GeoJsonPoint location;

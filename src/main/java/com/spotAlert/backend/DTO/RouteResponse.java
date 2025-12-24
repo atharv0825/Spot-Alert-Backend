@@ -2,6 +2,7 @@ package com.spotAlert.backend.DTO;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
@@ -9,7 +10,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RouteResponse {
+public class RouteResponse implements Serializable {
     private double distanceMeters;
     private double durationSeconds;
     private String polyline;

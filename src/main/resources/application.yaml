@@ -6,6 +6,11 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017
       database: spot_alert_Spots
+  redis:
+    host: localhost
+    port: 6379
+    cache:
+      type: redis
 
 server:
   port: ${PORT:8080}
@@ -27,6 +32,9 @@ osrm:
   timeout-ms: 5000
 
 
+jwt:
+  secret-key: "${JWT_SECRET}"
+  expiration: 2592000000
 
 
 

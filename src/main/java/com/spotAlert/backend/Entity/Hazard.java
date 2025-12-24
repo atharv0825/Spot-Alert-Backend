@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Hazard {
     @Id
-    private String Id;
+    private String id;
     private String type; // accident-prone , speed-bump , traffic-signal , school-zone , roundabout , sharp-turn , railway-crossing
     private double latitude;
     private double longitude;
@@ -26,10 +26,9 @@ public class Hazard {
     private int severity; // for the check the intensity of the black spot
     private String source; // from where the spot came from OSM , User-report , admin
     private LocalDateTime spotAddedAt;
-    private boolean verified;
+    private Boolean verified;
     private String roadName;
     public String city;
-    public boolean imported; // if already imported then don't import again
 
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location;

@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: SpotAlert
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/
+      database: spot_alert_Spots
+
+  redis:
+    host: localhost
+    port: 6379
+
+jwt:
+  secret-key: ${JWT_SECRET}
+  expiration: 86400000
+
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: always
+
+osrm:
+  base-url: http://localhost:5000
+  profile: driving
+  timeout-ms: 5000

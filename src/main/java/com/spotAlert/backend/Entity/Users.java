@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Document("User")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,9 @@ public class Users {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private Boolean isVerified = false;
+    private String verificationToken;
+
+    private LocalDateTime createdAt;
 }

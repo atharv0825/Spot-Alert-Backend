@@ -17,7 +17,7 @@ public class RedisConfig {
 
         RedisCacheConfiguration config =
                 RedisCacheConfiguration.defaultCacheConfig()
-                        .entryTtl(Duration.ofMinutes(10)) // TTL
+                        .entryTtl(Duration.ofMinutes(30)) // TTL
                         .disableCachingNullValues();
 
         return RedisCacheManager.builder(connectionFactory)

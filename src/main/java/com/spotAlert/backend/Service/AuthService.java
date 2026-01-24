@@ -7,12 +7,10 @@ import com.spotAlert.backend.Entity.Users;
 import com.spotAlert.backend.Repository.UserRepository;
 import com.spotAlert.backend.Security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
@@ -23,6 +21,8 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private VerificationEmailService verificationEmailService;
 
     public UserDTO registerUser(UserDTO dto){
         if(userRepository.existsByEmail(dto.getEmail())){
@@ -33,8 +33,14 @@ public class AuthService {
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(dto.getRole())
+                .isVerified(false)
+                .verificationToken(verificationEmailService.generateToken())
+                .createdAt(LocalDateTime.now())
                 .build();
         Users savedUser = userRepository.save(user);
+
+
+        verificationEmailService.sendVerificationEmail(savedUser);
 
         return UserDTO.builder()
                 .id(savedUser.getId())
@@ -50,6 +56,11 @@ public class AuthService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Invalid email or password")
                 );
+
+
+        if (Boolean.FALSE.equals(user.getIsVerified())) {
+            throw new IllegalStateException("Please verify your email before logging in");
+        }
 
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid email or password");

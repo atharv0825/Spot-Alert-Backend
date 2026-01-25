@@ -31,6 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<String> handleExpiredJwt(ExpiredJwtException ex) {
+        System.out.println(ex.fillInStackTrace());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body("JWT token has expired");

@@ -31,7 +31,7 @@ jwt:
   expiration: ${JWT_EXPIRATION}
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT}
 
 management:
   endpoints:
